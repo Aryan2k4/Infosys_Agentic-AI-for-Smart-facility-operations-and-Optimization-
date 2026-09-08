@@ -3,61 +3,71 @@ Central application configuration.
 Reads from environment variables (.env) with sane local defaults so the
 service runs out-of-the-box during development.
 """
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
 
-# CRITICAL: without this, backend/.env is never actually read — os.getenv()
-# only sees variables set in the shell's own environment, so AI_PROVIDER=groq
-# and GROQ_API_KEY in .env would silently have no effect and everything
-# would keep falling back to "mock". load_dotenv() must run before Settings
-# reads any os.getenv() calls below.
+# Load backend/.env before reading environment variables
 load_dotenv(BASE_DIR / ".env")
 
+
 class Settings:
-    PROJECT_NAME: str = "Infosys_Agentic AI for Smart Facility Operations and Optimization"
+    # Project
+    PROJECT_NAME: str = (
+        "Infosys_Agentic AI for Smart Facility Operations and Optimization"
+    )
     API_V1_PREFIX: str = "/api"
 
+    # Database
     DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", f"sqlite:///{BASE_DIR / 'data' / 'facilityops.db'}"
+        "DATABASE_URL",
+        f"sqlite:///{BASE_DIR / 'data' / 'facilityops.db'}"
     )
 
-    # Data ingestion source (Milestone 1: utility/IoT data integration).
-    # Points at the processed CSV that stands in for a real utility/IoT feed.
-    ENERGY_RAW_CSV: Path = BASE_DIR / "data" / "raw" / "energy_readings_raw.csv"
+    # Data ingestion source
+    ENERGY_RAW_CSV: Path = (
+        BASE_DIR / "data" / "raw" / "energy_readings_raw.csv"
+    )
 
     # Analytics tuning
-    ANOMALY_ZSCORE_THRESHOLD: float = 2.5   # hourly reading flagged if |z| exceeds this
-    OFF_HOURS_START: int = 20               # 8 PM
-    OFF_HOURS_END: int = 6                  # 6 AM
-    BASELINE_WASTE_THRESHOLD_PCT: float = 15.0  # off-hours load vs daytime avg
+    ANOMALY_ZSCORE_THRESHOLD: float = 2.5
+    OFF_HOURS_START: int = 20
+    OFF_HOURS_END: int = 6
+    BASELINE_WASTE_THRESHOLD_PCT: float = 15.0
 
-    CORS_ORIGINS: list = os.getenv(
-        "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000"
-    ).split(",")
+    # CORS
+    # Allows both local development and deployed Render frontend
+    CORS_ORIGINS: list = [
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,"
+            "http://localhost:3000,"
+            "https://infosys-ai-frontend.onrender.com"
+        ).split(",")
+        if origin.strip()
+    ]
 
-    # LLM provider for the Intelligence Engine's briefing/investigation.
-    # "mock" (default) works with no API key. "groq" (recommended real
-    # provider — fast, generous free tier) needs GROQ_API_KEY. "gemini" is
-    # also supported and needs GEMINI_API_KEY.
+    # AI Provider
     AI_PROVIDER: str = os.getenv("AI_PROVIDER", "mock")
 
-    # --- Auth (Milestone: login/admin protection) ---
-    # Secret used to sign JWTs. Falls back to a fixed dev-only value so the
-    # app still runs out-of-the-box, but this MUST be overridden in .env for
-    # anything beyond local dev — anyone with this default could forge a
-    # valid token otherwise.
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "dev-only-insecure-secret-change-me")
+    # JWT Authentication
+    JWT_SECRET_KEY: str = os.getenv(
+        "JWT_SECRET_KEY",
+        "dev-only-insecure-secret-change-me"
+    )
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "120"))
+    JWT_EXPIRE_MINUTES: int = int(
+        os.getenv("JWT_EXPIRE_MINUTES", "120")
+    )
 
-    # Seeded on first boot (see main.py's lifespan) if no users exist yet —
-    # this is a single-admin demo setup, not a public-registration system.
-    # Change ADMIN_PASSWORD in .env before showing this to anyone else.
-    ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "admin")
-    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "facilityops123")
+    # Admin credentials
+    ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "Aryan")
+    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "Aryan@2k4")
 
 
 settings = Settings()
