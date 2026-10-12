@@ -1,6 +1,6 @@
 # Agentic AI for Smart Facility Operations & Optimization
 
-### 🔗 [Live Demo](https://infosys-ai-frontend.onrender.com)
+### 🔗 [Live Demo]((https://facilityops.onrender.com/))
 
 The backend is on Render's free tier, so it sleeps after inactivity. If the demo above doesn't load within ~30 seconds, [wake the backend here first](https://infosys-agentic-ai-for-smart-facility-rg9z.onrender.com), then reload the live demo link.
 
