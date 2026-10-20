@@ -156,6 +156,7 @@ init()  →  analyze()  →  recommend()  →  run()
 ```bash
 cd backend
 pip install -r requirements.txt
+cp .env.example .env
 uvicorn app.main:app --reload
 # → http://localhost:8000/docs  (Swagger UI)
 # Data auto-ingests on first startup.
@@ -168,6 +169,7 @@ uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
+cp .env.example .env
 npm run dev
 # → http://localhost:5173/executive  (default landing page)
 ```
@@ -241,4 +243,4 @@ See each milestone section above, or the relevant `build_*_dataset.py` script, f
 
 ## License
 
-MIT, see LICENSE.
+This project is licensed under the [MIT License](./LICENSE). Copyright (c) 2026 Aryan Goswami.
